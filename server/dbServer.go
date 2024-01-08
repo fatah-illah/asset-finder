@@ -51,5 +51,7 @@ func InitDatabase(config *viper.Viper) *gorm.DB {
 		log.Fatal().Err(err).Msg("Error while migrating database: %v")
 	}
 
+	models.AutoMigratePostTag(db)
+
 	return db
 }

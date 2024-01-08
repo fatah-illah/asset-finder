@@ -2,10 +2,7 @@ package server
 
 import (
 	"github.com/fatah-illah/asset-finder/controllers"
-	"github.com/fatah-illah/asset-finder/repositories"
-	dbContext2 "github.com/fatah-illah/asset-finder/services"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
@@ -14,22 +11,18 @@ import (
 type HttpServer struct {
 	config             *viper.Viper
 	router             *gin.Engine
-	ControllersManager controllers.ManagerControllers
+	ManagerControllers controllers.ManagerControllers
 }
 
-func InitHttpServer(config *viper.Viper, validator *validator.Validate, dbHandler *gorm.DB) HttpServer {
-	repositoriesManager := repositories.NewRepositoriesManager(dbHandler)
+func InitHttpServer(config *viper.Viper, dbInstance *gorm.DB) HttpServer {
+	managerControllers := controllers.NewManagerControllers(dbInstance)
 
-	servicesManager := dbContext2.NewServicesManager(repositoriesManager, validator, dbHandler)
-
-	controllersManager := controllers.NewControllersManager(servicesManager)
-
-	router := InitRouter(controllersManager)
+	router := InitRoute(managerControllers)
 
 	return HttpServer{
 		config:             config,
 		router:             router,
-		ControllersManager: *controllersManager,
+		ManagerControllers: *managerControllers,
 	}
 }
 

@@ -1,14 +1,19 @@
 package main
 
 import (
+	"os"
+
 	"github.com/fatah-illah/asset-finder/config"
 	"github.com/fatah-illah/asset-finder/server"
 	"github.com/fatah-illah/asset-finder/utils"
-	"github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog/log"
-	"os"
 )
 
+// @title Asset Finder Services API
+// @version 1.0
+// @description A Post, Tag, and Many-to-Many Relationship between Post and Tag services API in Go using Gin framework.
+// @host localhost:8000
+// @BasePath /api
 func main() {
 	utils.SetupTimezone()
 
@@ -17,13 +22,12 @@ func main() {
 	log.Info().Msg("Initializing configuration ...")
 	confHandler := config.InitConfig(getConfigFileName())
 
-	log.Info().Msg("Initializing database...")
+	log.Info().Msg("Initializing database ...")
 	dbHandler := server.InitDatabase(confHandler)
 	log.Info().Msgf("Database initialized. Handler: %+v", dbHandler)
 
-	validate := validator.New()
-	log.Info().Msg("Initializing HTTP Server!")
-	httpServer := server.InitHttpServer(confHandler, validate, dbHandler)
+	log.Info().Msg("Initializing HTTP Server ...")
+	httpServer := server.InitHttpServer(confHandler, dbHandler)
 
 	httpServer.Start()
 }
